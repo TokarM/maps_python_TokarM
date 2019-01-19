@@ -4,6 +4,7 @@ import googlemaps
 from wsgiref import simple_server
 from math import sin, cos, sqrt, atan2, radians
 
+# Create Falcon API instance
 api = falcon.API()
 
 class GasStation(object):
@@ -13,12 +14,15 @@ class GasStation(object):
         gmaps = googlemaps.Client(key='Your API key here')
         input = req.params
 
-
+        # Read parameters provided in a link to the server
         try:
+
+            # Retrieving Geolocation from link address
             lat = float(input['lat'])
             lng = float(input['lng'])
             mylocation = {'lat': lat, 'lng': lng,}
 
+            # Retrieving destination from link address
             if input['destination'] == 'gas_station':
                 output = Distance().find_address(gmaps, mylocation, "gas station")
             elif input['destination'] == 'starbucks':
