@@ -13,26 +13,25 @@ class GasStation(object):
         gmaps = googlemaps.Client(key='Your API key here')
         input = req.params
 
-        # Get geo location of your device
-        #mylocation = gmaps.geolocate()
-        #mylocation = mylocation['location']
+
         try:
             lat = float(input['lat'])
             lng = float(input['lng'])
             mylocation = {'lat': lat, 'lng': lng,}
+
+            if input['destination'] == 'gas_station':
+                output = Distance().find_address(gmaps, mylocation, "gas station")
+            elif input['destination'] == 'starbucks':
+                output = Distance().find_address(gmaps, mylocation, "starbucks")
+            elif input['destination'] == 'dunkin':
+                output = Distance().find_address(gmaps, mylocation, "dunkin donats")
+            elif req.content_length == 0:
+                raise falcon.HTTPBadRequest("Incorrect parameters",
+                                            "Provide correct parameters")
         except:
             raise falcon.HTTPBadRequest( "Incorrect parameters",
             "Provide correct parameters")
 
-        if input['destination'] == 'gas_station':
-            output = Distance().find_address(gmaps,mylocation,"gas station")
-        elif input['destination'] == 'starbucks':
-            output = Distance().find_address(gmaps,mylocation,"starbucks")
-        elif input['destination'] == 'dunkin':
-            output = Distance().find_address(gmaps,mylocation,"dunkin donats")
-        elif req.content_length == 0:
-            raise falcon.HTTPBadRequest("Incorrect parameters",
-            "Provide correct parameters")
 
         # Get provided parameters
         resp.body = json.dumps(output)
@@ -92,10 +91,9 @@ class Distance(object):
                   'name': results[0]['name']}
         return output
 
-
+# Create an instance of gas station class in order to produce a response
 gas_station = GasStation()
 
-#api.add_route('/gas_station', gas_station)
 api.add_route('/key', gas_station)
 
 if __name__ == '__main__':
